@@ -41,43 +41,45 @@ int main()
 
         case(49):
                     // Add first node
-                    printf("Enter an integer to add to linked list: ");
+                    printf("\nEnter an integer to add to linked list: ");
                     clear_Buffer();
                     scanf("%d",&data);
                     add_First(&headptr,data);
                     break;
         case(50):
                     // Add first node
-                    printf("Enter an integer to add to linked list: ");
+                    printf("\nEnter an integer to add to linked list: ");
                     clear_Buffer();
                     scanf("%d",&data);
                     add_Last(&headptr,data);
                     break;
         case(51):   // Traverse
+                    printf("\n");
                     traverse(headptr);
                     break;
         case(52):   // Insert index
-                    printf("Enter an integer to add to linked list");
+                    printf("\nEnter an integer to add to linked list");
                     clear_Buffer();
                     scanf("%d",&data);
                     clear_Buffer();
-                    printf("Enter an index");
+                    printf("\nEnter an index");
                     scanf("%d",&index);
                     insert_Node(index,data,&headptr);
                     break;
         case(53):   // Remove insert
-                    printf("Index to remove node");
+                    printf("\nIndex to remove node");
                     clear_Buffer();
                     scanf("%d",&index);
                     remove_Node(index,&data,&headptr);
-                    printf("Node removed [%d]",data);
+                    if(data != NULL)
+                    printf("\nNode removed [%d]",data);
                     break;
         case(54):    // Reverse
                     reverse(headptr,&headptr);
-                    printf("Liss reversed");
+                    printf("\nList reversed");
                     break;
         case(55):   // size of linked list
-                    printf("Size of list: %d",size(headptr));
+                    printf("\nSize of list: %d\n",size(headptr));
                     break;
         case(56):   // Free linked list
                     free_List(&headptr);
@@ -87,7 +89,7 @@ int main()
                         free_List(&headptr);
             break;
         default:        // Wrong format
-                printf("Please enter valid input!\n");
+                printf("\nPlease enter valid input!\n");
 
                 // clear stream
             break;
@@ -139,7 +141,11 @@ int size(Node* cursor)
         {
             int count = 0;
             // iterate the list until null
-            for(cursor!= NULL; ++count;){cursor = cursor->next;}
+            while(cursor != NULL)
+                {
+                    cursor = cursor->next;
+                    ++count;
+                }
             return count;
         }
 }
@@ -149,16 +155,17 @@ void remove_Node(int index, int* data_Removed, struct Node** headptr)
 {
     int count = 0;
     count = size(*headptr);
+    int offset = index;
     // IF node removed is first
-    if(index == 1)
+    if(index == 0)
         {
-            data_Removed = (*headptr)->data;
+            *data_Removed = (*headptr)->data;
             Node* temp = *headptr;
             (*headptr) = (*headptr)->next;
             free(temp);
             (*headptr)->prev = NULL;
         }
-    else if(index == count)
+    else if(index == count-1)
         {
             Node* cursor = *headptr;
             // Get last node in the list
@@ -168,27 +175,36 @@ void remove_Node(int index, int* data_Removed, struct Node** headptr)
                 }
                 // Last node rearrange pointers
             Node* temp = cursor;
-            data_Removed = temp->data;
-            cursor->prev->next = NULL;
+            *data_Removed = temp->data;
+            if(cursor->prev != NULL)
+            {
+                cursor->prev->next = NULL;
+            }
+            else
+                { // No node begin set to NULL
+                    *headptr == NULL;
+                }
             free(temp); // delete node
 
         }
-    else if(index <=0 || index > count)
+    else if(index < 0 || index > count-1)
         {
             // return null
-           printf("Invalid index");
-           data_Removed = NULL;
+           printf("\nInvalid index\n");
+           *data_Removed = NULL;
         }
         else
         {
             // Iterate and delete node at offset
             Node* cursor = *headptr;
-                for(count > 1; --count;)
+                while(offset > 0 )
                     {
                         cursor = cursor->next;
+                        --offset;
                     }
+
                     // Have targeted node
-            data_Removed = cursor->data;
+            *data_Removed = cursor->data;
             Node* temp = cursor;
             cursor->prev->next = temp->next;
             temp->next->prev = temp->prev;
@@ -202,33 +218,34 @@ void insert_Node(int index, int data,struct Node** headptr)
 {
     int offset = index;
     int count = size(*headptr);
-    if(offset <= 0 || offset > count)
-        {
-            printf("Invalid index");
-        }
-    else if(index == 1)
+    if(index == 0)
         {
             // Otherwise add node
             add_First( &(*headptr),data);
 
         }
-    else if(index == size )
+    else if(offset < 0 || offset > count)
+        {
+            printf("\nInvalid index\n");
+        }
+    else if(offset == count-1 )
         {
             add_Last(&(*headptr),data);
         }
-        else // Node is in between
-            {
+        else
+            {   // Inset node before targeted node
                 Node* cursor = *headptr;
-                for(offset > 1; --offset;)
+                for(offset-1 > 0; --offset;)
                     {
                         cursor = cursor->next;
                     }
                 // have pointer reassing node's ptr members
                 Node* temp = create_Node(data);
-                temp->next = cursor->next;
-                temp->prev = cursor;
-                cursor->next->prev = temp;
-                cursor->next= temp;
+                temp->next = cursor;
+                temp->prev = cursor->prev;
+                cursor->prev->next = temp;
+                cursor->prev = temp;
+
             }
 
 }
@@ -297,7 +314,7 @@ void traverse(Node* cursor)
         }
     else
         {
-            printf("[NULL]");
+            printf("[NULL]\n");
         }
 }
 
